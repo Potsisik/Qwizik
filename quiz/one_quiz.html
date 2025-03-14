@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .quiz-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #007BFF;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
+            text-align: center;
+        }
+
+        .answers_list {
+            margin-top: 20px;
+        }
+
+        .answer {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            height: 18.4px;
+        }
+
+        .text {
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            position: absolute;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .answer:hover {
+            background-color: #e0e0e0;
+        }
+
+        .answer .bg {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            padding-right: 5px;
+
+            border-radius: 4px;
+            width: 0%;
+            height: 100%;
+            background-color: #88c8d6;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 10;
+            
+            animation: ani 3.5s forwards;
+        }
+
+        @keyframes ani {
+        0% {width: 0%;}
+        100% {width: 100%;}
+        }
+
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+
+        .back {
+            
+            margin-top: 40px;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+        }
+
+        .back:hover {
+            background-color: #e0e0e0;
+        }
+
+        #button_container{
+            display: flex;
+            justify-content: space-between;
+            width: 600px;
+        }
+
+        #edit {
+            margin-top: 40px;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        #edit:hover {
+            background-color: #e0e0e0;
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="container" style="animation: anim 5s forwards;"></div>
+
+    <div id = "button_container">
+        <button class="back" type ="button"><a href="/quizes.html">&#9668;Назад</a></button>
+        <button id = "edit" type ="button"><a href="">Редактировать <i class="bi bi-pencil"></i></a></button>
+        <script>
+            var x = location.pathname.split('/')[2];
+            a = document.getElementById("edit").firstChild;
+            a.href = `/edit/${x}`;
+        </script>
+    </div>
+</body>
+<script src="https://confettijs.org/confetti.min.js"></script>
+    <script>
+            let confetti = new Confetti("container");
+            confetti.destroyTarget(false); 
+            confetti.setCount(200);
+            confetti.setSize(2);
+            confetti.setPower(50);
+            confetti.setFade(true);
+    </script>
+
+<script>
+
+    var list_of_answers; // временно
+
+    document.addEventListener("DOMContentLoaded", () =>{
+        var x = location.pathname.split('/')[2];
+        let a = document.getElementById("edit").firstChild;
+        a.href = `/edit/${x}`;
+        //alert(x);
+        loadQuiz(x);
+    });
+
+    function loadQuiz(quiz_id){
+        fetch(`/quizes/${quiz_id}`)
+        .then(response => response.json())
+        .then(quiz => createQuiz(quiz_id, quiz.title, quiz.answers)) //добавить еще параметры
+    }
+
+    function createQuiz(quiz_id, text, answers){ //добавить еще параметры
+
+        list_of_answers = answers; //временно
+
+        const title = document.createElement('p');
+        title.textContent = text;
+        title.classList.add('quiz-title');
+
+        const specialDiv = document.getElementById("container");
+        specialDiv.appendChild(title);
+
+        const div = document.createElement('div');
+        div.classList.add('answers_list');
+
+        answers.forEach((element, index) => {
+            const answer = document.createElement('div');
+            const text = document.createElement('div');
+            text.textContent = Object.keys(element)[0]; //достаю названия словарей
+            answer.classList.add('answer');
+            text.classList.add('text');
+            answer.id = index; //зачем?
+            div.appendChild(answer);
+            answer.appendChild(text);
+            answer.onclick = () => showAnswers(quiz_id, text.textContent);
+        });
+
+        specialDiv.appendChild(div);
+
+    } 
+
+    function showAnswers(id, vote_answer) { 
+        fetch(`/plus/${id}`, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({answer: vote_answer})
+        })
+        .then(response => response.json()) //пока непонятно зачем
+        .then(data => {
+            list_of_answers = data
+            sum = get_summ(list_of_answers);
+            const elems = document.getElementsByClassName('answer');
+            Array.from(elems).forEach((elem, index) => {
+                const bg = document.createElement('div');
+                x = list_of_answers[index]; // получили элемент из массива ответов
+                txt = elem.querySelector(".text").textContent;
+
+                bg.textContent = x[txt];
+                bg.classList.add("bg");
+                len = (x[txt] / sum) * 100;
+                bg.style.maxWidth = `${len}%`;
+
+                elem.appendChild(bg);
+                elem.onclick = null;
+            })
+        })
+        .catch(function (error) { 
+            alert(error);
+        });     
+    }
+
+    function get_summ (list_of_dict) {
+        let sum = 0;
+        for (let i = 0; i < list_of_dict.length; i++) { 
+            x = list_of_dict[i];
+            name = Object.keys(x)[0];
+            sum += x[name];
+        }
+        return sum;
+    }
+</script>
+</html>

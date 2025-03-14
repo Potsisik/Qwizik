@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f8;
+            color: #333;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #444;
+        }
+
+        p {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .new_answer {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .new_answer input {
+            flex-grow: 1;
+            margin-right: 5px;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        .back {
+            display: block;
+            margin-top: 40px;
+        }
+        .OK {
+            margin: auto;
+            margin-top: 40px;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 44px;
+        }
+    </style>
+</head>
+<body>
+    <h1 id = "h1">Редактирование</h1>
+    <form id = "form">
+        <p class="new_title">Название</p>
+        <input type="text" id="title" name="title">
+
+        <p class="new_answers">Ответы:</p>
+        <div id="0" class="new_answer"><input type="text" name="answer" class="new_answer_1"></div>
+        <button type="button" id="add">Добавить ответ</button>
+
+        <p class="settings">Настройки: (пока не работают)</p>
+        <input type="checkbox" id="victorina" value="Режим викторины" name="have_right_answer"><label for="victorina">Режим викторины</label>
+        <input type="checkbox" id="multichoise" value="Несколько ответов" name="multichoise"><label for="multichoise">Несколько вариантов ответа</label>
+
+    </form>
+    <button type="button" id="submit">Изменить</button>
+
+    <button class="back" type="button"><a href="/quizes.html">&#9668;Назад</a></button>
+</body>
+<script>
+    let counter = 0;
+    add.onclick = function() {
+        addAnswer("");
+    }
+
+    function addAnswer(text) {
+        counter += 1;
+
+        list = document.querySelectorAll(".new_answer");
+        pred_el = list[list.length - 1];
+
+        new_div = document.createElement('div');
+        new_el = document.createElement('input');
+        new_button = document.createElement('button');
+
+        new_el.setAttribute("type", "text");
+        new_el.setAttribute("name", "answer");
+        new_el.classList.add("new_answer_1");
+        new_el.value = text; //новое
+        new_button.setAttribute("type", "button");
+        new_button.textContent = "Удалить";
+        new_div.id = counter;
+        new_div.classList.add("new_answer");
+
+        pred_el.insertAdjacentElement('afterend', new_div);
+        new_div.appendChild(new_el);
+        new_div.appendChild(new_button);
+
+        new_button.onclick = function () {
+            del = this.parentElement;
+            del.remove();
+        }
+    }
+
+    submit.onclick = function() { //сделай какой нибудь опознавательный знак что все работает, можно страничку переагрузить
+        let ans = document.querySelectorAll(".new_answer_1");
+        let answers = [];
+        ans.forEach(element => {
+            answers.push(element.value)
+        });
+        let quiz = {
+            "title": document.getElementById("title").value,
+            "answers": answers,
+            "multiplayer_choise": document.getElementById("multichoise").checked,
+            "have_right_answer": document.getElementById("victorina").checked
+        }
+        let x = location.pathname.split('/')[2];
+        fetch(`/edit/${x}`, {
+            method: "PUT",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(quiz)
+        })
+        .then(response => response.text())
+        .then(response => deleteAll(response)) 
+        .catch(function (error) { 
+            alert(error);
+        });
+        
+        }
+
+    function deleteAll(id) {
+    
+        let h1 = document.getElementById("h1");
+        let form = document.getElementById("form");
+        let button_sub = document.getElementById("submit");
+
+        form.remove();
+        button_sub.remove();
+
+        let div_OK = document.createElement("div");
+        div_OK.textContent = "Опрос успешно изменен";
+        div_OK.classList.add("OK");
+
+        let test = document.createElement("button");
+        test.setAttribute("type", "button");
+        test.id = "test";
+
+        let a = document.createElement("a");
+        a.href = `/quizes.html/${id}`; 
+        a.textContent = "Перейти к тесту"
+        test.appendChild(a);
+
+        h1.insertAdjacentElement('afterend', div_OK);
+        h1.remove();
+        div_OK.insertAdjacentElement('afterend', test);
+    }
+
+    document.addEventListener("DOMContentLoaded", () =>{
+        var x = location.pathname.split('/')[2];
+        //alert(x);
+        loadQuiz(x);
+    });
+
+    function loadQuiz(quiz_id){
+        fetch(`/quizes/${quiz_id}`)
+        .then(response => response.json())
+        .then(quiz => createForm(quiz.title, quiz.answers, quiz.multiplayer_choise, quiz.have_right_answer)) //добавить еще параметры
+    }
+
+    function createForm(text, answers, multiplayer_choise, have_right_answer) {
+        title = document.getElementById('title');
+        title.value = text;
+
+        firstAns = document.getElementById("0").firstChild; //заполняем самый первый ответ
+        firstAns.value = Object.keys(answers[0])[0];
+
+        for (let i = 1; i < answers.length; i++){
+            val = Object.keys(answers[i])[0]
+            addAnswer(val);
+        }
+
+        multichoise = document.getElementById('multichoise');
+        multichoise.checked = multiplayer_choise;
+        victorina = document.getElementById('victorina');
+        victorina.checked = have_right_answer;
+    }
+
+    
+</script>
+</html>
