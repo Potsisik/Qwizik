@@ -99,14 +99,14 @@ class User(BaseModel):
     name: str
     password: str
 
-class User_DB(BaseModel):
+class User_DB:
     li_user: List[User]
     def __init__(self, filename):
         with open(filename, 'r', encoding='utf-8') as j:
             python_data = json.loads(j.read())
         adapter = TypeAdapter(List[User])
         users = adapter.validate_python(python_data)
-        self.li_user =  users
+        self.li_user = users
     
     def login(self, user: User):
         for u in self.li_user:

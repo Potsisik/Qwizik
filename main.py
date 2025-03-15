@@ -9,6 +9,7 @@ app.mount("/styles", StaticFiles(directory="styles"), name="styles")
         
 
 My_DB = DB('quizes.json') #создали базу данных, где подгружены все данные из файла
+All_users = User_DB('admins.json')
 
 @app.get("/quizes", tags=["Опросы"], summary=["Получить все опросы"]) #получаем все данные с сервера
 def read_quizes():
@@ -34,3 +35,7 @@ def delete_quiz(del_id: int):
 @app.post("/plus/{vote_id}", tags=["Опросы"], summary=["Добавить балл"]) #функция Артура
 def vote_quiz(vote_id: int, vote_answer: Vote):
     return My_DB.vote_quiz(vote_id, vote_answer.answer)
+
+@app.post("/login", tags=["Челики"], summary=["Войти как админ"])
+def login(user: User):
+    return All_users.login(user)
