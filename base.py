@@ -84,7 +84,7 @@ class DB: #класс базы данных
                         answer[key] += 1
                         with open("quizes.json", 'w', encoding='utf-8',) as f:
                             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
-                        return quiz.answers
+                        return quiz
         raise HTTPException(status_code=404)
     
     def delete_quiz(self, del_id): #функция Тимура
