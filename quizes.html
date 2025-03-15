@@ -47,12 +47,14 @@
         div.id = id
         div.appendChild(a);
 
+        const edit_a = document.createElement('a');
+        edit_a.href = `/edit/${id}`
         const button_2 = document.createElement('button');
         button_2.setAttribute("type", "button");
         button_2.classList.add("edit");
-        button_2.innerHTML = `<a href=\"/edit/${id}\"><i class=\"bi bi-pencil\"></i></a>`;
-        div.appendChild(button_2);
-
+        button_2.innerHTML = `<i class=\"bi bi-pencil\"></i>`;
+        edit_a.appendChild(button_2);
+        div.appendChild(edit_a);
 
         const button = document.createElement('button');
         button.setAttribute("type", "button");

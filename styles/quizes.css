@@ -60,10 +60,20 @@ div {
     max-height: 25px;
     background-color: #ed7777;
     border-radius: 5px 5px 5px 5px;
+    cursor:pointer;
+}
+
+.delete:hover {
+    background-color: #c45555;
 }
 
 .edit {
     max-height: 25px;
     background-color: #77c2ed;
     border-radius: 5px 5px 5px 5px;
+    cursor:pointer;
+}
+
+.edit:hover {
+    background-color: #4889af;
 }
