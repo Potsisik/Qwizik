@@ -26,3 +26,8 @@ def get_html(quiz_id):
 def get_html(quiz_id):
     html_content = Path('edit.html').read_text(encoding="utf-8")
     return HTMLResponse(content=html_content, status_code=200)
+
+@router.get("/login", tags=["Челики"], summary=["Страничка авторизации"]) 
+def get_html():
+    html_content = Path('login.html').read_text(encoding="utf-8")
+    return HTMLResponse(content=html_content, status_code=200)

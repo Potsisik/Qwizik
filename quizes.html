@@ -11,7 +11,7 @@
 <body id = "container">
     <div class="line-container">
         <h1>Quizik</h1>
-        <button id = "login_but"><i class="bi bi-person-circle"></i></button>
+        <a href="/login"><button id = "login_but"><i class="bi bi-person-circle"></i></button></a>
     </div>   
 
     <a class = "quiz-link create" href="/create">
@@ -23,6 +23,8 @@
 </body>
 
 <script>
+    let Admin = false //временно
+
     document.addEventListener("DOMContentLoaded", loadAll);
 
     function loadAll() {
@@ -56,6 +58,7 @@
         button_2.setAttribute("type", "button");
         button_2.classList.add("edit");
         button_2.innerHTML = `<i class=\"bi bi-pencil\"></i>`;
+        
         edit_a.appendChild(button_2);
         div.appendChild(edit_a);
 
@@ -73,6 +76,13 @@
                 del.remove();
             }
             
+        }
+
+        if (Admin == false) {
+            button_2.disabled = true
+            button_2.setAttribute("title", "Доступно только админам")
+            button.disabled = true
+            button.setAttribute("title", "Доступно только админам")
         }
 
         const specialDiv = document.getElementById("container");
