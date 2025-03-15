@@ -109,4 +109,7 @@ class User_DB(BaseModel):
         self.li_user =  users
     
     def login(self, user: User):
-        pass
+        for u in self.li_user:
+            if u == user:
+                return True
+        return False

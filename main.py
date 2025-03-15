@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from front import router
-from base import DB, Quiz, Vote
+from base import DB, Quiz, Vote, User, User_DB
 
 app = FastAPI()
 app.include_router(router)
