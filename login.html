@@ -10,14 +10,31 @@
     <h1 id = "h1">Войти как администратор</h1>
     <form id = "form">
         <p class="new_title">Имя</p>
-        <input type="text" id="title" name="title">
+        <input type="text" id="name" name="name">
 
         <p class="new_answers">Пароль:</p>
-        <div id="0" class="new_answer"><input type="text" name="answer" class="new_answer_1"></div>
+        <div id="0" class="new_answer"><input type="text" id="password" name="password" class="new_answer_1"></div>
        
     </form>
     <button type="button" id="submit">Войти</button>
 
     <a href="/"><button class="back" type="button">&#9668;Назад</button></a>
 </body>
+<script>
+    submit.onclick = function(){
+        let user = {
+            "name": document.getElementById("name").value,
+            "password": document.getElementById("password").value
+        }
+        fetch("/login", {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+        .then(response => response.text())
+        .then(response => alert(response)) 
+    }
+</script>
 </html>
