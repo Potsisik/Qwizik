@@ -82,7 +82,8 @@
             "title": document.getElementById("title").value,
             "answers": answers,
             "multiplayer_choise": document.getElementById("multichoise").checked,
-            "have_right_answer": document.getElementById("victorina").checked
+            "have_right_answer": document.getElementById("victorina").checked,
+            "right_answer": document.getElementById("right").value
         }
         fetch("/quizes", {
             method: "POST",

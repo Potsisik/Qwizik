@@ -13,10 +13,10 @@
 
     <div id = "button_container">
         <a href="/"><button class="back" type ="button">&#9668;Назад</button></a>
-        <a href=""></a><button id = "edit" type ="button">Редактировать <i class="bi bi-pencil"></i></button></a>
+        <a href="" id = "edit_1"><button id = "edit" type ="button">Редактировать <i class="bi bi-pencil"></i></button></a>
         <script>
             var x = location.pathname.split('/')[2];
-            a = document.getElementById("edit").firstChild;
+            a = document.getElementById("edit_1");
             a.href = `/edit/${x}`;
         </script>
     </div>
