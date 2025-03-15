@@ -7,7 +7,7 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get("/quizes.html", tags=["Страница"], summary=["Получить главную страницу"]) #получаем главную страницу - перенести в другой файл
+@router.get("/", tags=["Страница"], summary=["Получить главную страницу"]) #получаем главную страницу - перенести в другой файл
 def get_html():
     html_content = Path('quizes.html').read_text(encoding="utf-8")
     return HTMLResponse(content=html_content, status_code=200)

@@ -4,79 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="styles/quizes.css" rel="stylesheet" type="text/css" />
     <title>Document</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
 
-        h1 {
-            color: #333;
-        }
-
-        .quiz-link {
-            display: flex;
-            justify-content: center;
-            text-decoration: none;
-            color: #444;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
-            transition: background-color 0.3s, transform 0.3s;
-            width: 400px;
-            height: 56.8px;
-            margin: 15px auto;
-        }
-
-        .quiz-link.create {
-            border: 3px solid #e0e0e0;
-        }
-
-        .quiz-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .quiz-link:hover {
-            background-color: #e0e0e0;
-            transform: scale(1.05);
-        }
-
-        .img-title {
-            display: flex; /* Align items in a row */
-            align-items: center; /* Center items vertically */
-            justify-content: center; /* Center items horizontally */
-        }
-
-        .quiz-icon {
-            width: 24px; /* Set a desired width */
-            height: 24px; /* Set a desired height */
-            margin-right: 8px; /* Add some space between the image and the text */
-        }
-
-        div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .delete {
-            max-height: 25px;
-            background-color: #ed7777;
-            border-radius: 5px 5px 5px 5px;
-        }
-
-        .edit {
-            max-height: 25px;
-            background-color: #77c2ed;
-            border-radius: 5px 5px 5px 5px;
-        }
-
-    </style>
 </head>
 <body id = "container">
     <h1>Quizik</h1>
