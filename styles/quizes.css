@@ -8,6 +8,20 @@ body {
 
 h1 {
     color: #333;
+    flex-grow: 1; /* Заголовок занимает доступное пространство */
+    text-align: center;
+}
+
+#login_but {
+    margin-left: auto;
+    background: transparent; /* Прозрачный фон */
+    border: none; /* Убираем границы */
+    padding: 0;
+    cursor: pointer;
+}
+
+.bi-person-circle {
+    font-size: 32px;
 }
 
 .quiz-link {
