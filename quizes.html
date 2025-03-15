@@ -62,10 +62,14 @@
         button.innerHTML = "<i class=\"bi bi-trash\"></i>";
         div.appendChild(button);
         button.onclick = function () {
-            del = this.parentElement;
-            id = del.id;
-            fetch(`/delete/${id}`, {method: "DELETE"})
-            del.remove();
+            const isConfirmed = confirm("Вы уверены, что хотите удалить?");
+            if (isConfirmed) {
+                del = this.parentElement;
+                id = del.id;
+                fetch(`/delete/${id}`, {method: "DELETE"})
+                del.remove();
+            }
+            
         }
 
         const specialDiv = document.getElementById("container");
