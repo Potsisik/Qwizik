@@ -61,6 +61,10 @@ class DB: #класс базы данных
                 quiz.answers = str_to_dict(new_quiz.answers) #переделать на нормально позже
                 quiz.multiplayer_choise = new_quiz.multiplayer_choise
                 quiz.have_right_answer = new_quiz.have_right_answer
+                if new_quiz.have_right_answer == True:
+                    quiz.right_answer = new_quiz.right_answer
+                else:
+                    quiz.right_answer = None
         with open("quizes.json", 'w', encoding='utf-8',) as f:
             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
         return edit_id
