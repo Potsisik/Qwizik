@@ -94,3 +94,19 @@ def str_to_dict(old_list: list): #функция делает из списка 
     for el in old_list:
         new_list.append({el: 0})
     return new_list
+
+class User(BaseModel):
+    name: str
+    password: str
+
+class User_DB(BaseModel):
+    li_user: List[User]
+    def __init__(self, filename):
+        with open(filename, 'r', encoding='utf-8') as j:
+            python_data = json.loads(j.read())
+        adapter = TypeAdapter(List[User])
+        users = adapter.validate_python(python_data)
+        self.li_user =  users
+    
+    def login(self, user: User):
+        pass
