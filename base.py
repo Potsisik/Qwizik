@@ -15,6 +15,7 @@ class Quiz(BaseModel): #класс опроса
     answers: list 
     multiplayer_choise: bool # не успели реализовать эти параметры
     have_right_answer: bool
+    right_answer: Optional[str] = None
     #добавить правильный ответ в режиме викторины
 
     #конструктор я не пишу потому что он наследуется от BaseModel
@@ -68,6 +69,11 @@ class DB: #класс базы данных
         quizes = self.li_quiz
         for quiz in quizes:
             if quiz.id == vote_id:
+                if quiz.have_right_answer == True:
+                    if vote_answer == quiz.right_answer:
+                        print('okay')
+                    else:
+                        print('you are stupid motherfucker')
                 for answer in quiz.answers:
                     key = list(answer.keys())[0]
                     if key == vote_answer:
