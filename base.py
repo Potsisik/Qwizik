@@ -15,6 +15,7 @@ class Quiz(BaseModel): #класс опроса
     answers: list 
     multiplayer_choise: bool # не успели реализовать эти параметры
     have_right_answer: bool
+    right_answer: Optional[str] = None
     #добавить правильный ответ в режиме викторины
 
     #конструктор я не пишу потому что он наследуется от BaseModel
@@ -60,6 +61,10 @@ class DB: #класс базы данных
                 quiz.answers = str_to_dict(new_quiz.answers) #переделать на нормально позже
                 quiz.multiplayer_choise = new_quiz.multiplayer_choise
                 quiz.have_right_answer = new_quiz.have_right_answer
+                if new_quiz.have_right_answer == True:
+                    quiz.right_answer = new_quiz.right_answer
+                else:
+                    quiz.right_answer = None
         with open("quizes.json", 'w', encoding='utf-8',) as f:
             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
         return edit_id
@@ -68,13 +73,18 @@ class DB: #класс базы данных
         quizes = self.li_quiz
         for quiz in quizes:
             if quiz.id == vote_id:
+                if quiz.have_right_answer == True:
+                    if vote_answer == quiz.right_answer:
+                        print('okay')
+                    else:
+                        print('you are stupid motherfucker')
                 for answer in quiz.answers:
                     key = list(answer.keys())[0]
                     if key == vote_answer:
                         answer[key] += 1
                         with open("quizes.json", 'w', encoding='utf-8',) as f:
                             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
-                        return quiz.answers
+                        return quiz
         raise HTTPException(status_code=404)
     
     def delete_quiz(self, del_id): #функция Тимура

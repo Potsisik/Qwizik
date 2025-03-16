@@ -10,13 +10,14 @@
 </head>
 <body>
     <div id="container" style="animation: anim 5s forwards;"></div>
+    <p id = "tf" class="hidden"></p>
 
     <div id = "button_container">
         <a href="/"><button class="back" type ="button">&#9668;Назад</button></a>
-        <a href=""></a><button id = "edit" type ="button">Редактировать <i class="bi bi-pencil"></i></button></a>
+        <a href="" id = "edit_1"><button id = "edit" type ="button">Редактировать <i class="bi bi-pencil"></i></button></a>
         <script>
             var x = location.pathname.split('/')[2];
-            a = document.getElementById("edit").firstChild;
+            a = document.getElementById("edit_1");
             a.href = `/edit/${x}`;
         </script>
     </div>
@@ -88,8 +89,8 @@
             body: JSON.stringify({answer: vote_answer})
         })
         .then(response => response.json()) //пока непонятно зачем
-        .then(data => {
-            list_of_answers = data
+        .then(quiz => {
+            list_of_answers = quiz.answers
             sum = get_summ(list_of_answers);
             const elems = document.getElementsByClassName('answer');
             Array.from(elems).forEach((elem, index) => {
@@ -99,6 +100,33 @@
 
                 bg.textContent = x[txt];
                 bg.classList.add("bg");
+                if (quiz.have_right_answer == true){
+                    tf.classList.remove('hidden');
+                    if (quiz.right_answer == vote_answer){
+                        if (txt == vote_answer){
+                            bg.classList.add("yes-choise")
+                        }
+                        else{
+                            bg.classList.add("yes");
+                        }
+                        tf.textContent = "Правильно!";
+                    }
+                    else {
+                        if (txt == vote_answer){
+                            bg.classList.add("no-choise")
+                        }
+                        else {bg.classList.add("no");}
+                        tf.textContent = "Неправильно(";
+                    }
+                    
+                }
+                else {
+                    if (txt == vote_answer){
+                            bg.classList.add("ne_victorina-choise")
+                        }
+                    else {bg.classList.add("ne_victorina")}
+                }
+
                 len = (x[txt] / sum) * 100;
                 bg.style.maxWidth = `${len}%`;
 

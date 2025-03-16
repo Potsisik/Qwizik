@@ -21,12 +21,26 @@
         <input type="checkbox" id="victorina" value="Режим викторины" name="have_right_answer"><label for="victorina">Режим викторины</label>
         <input type="checkbox" id="multichoise" value="Несколько ответов" name="multichoise"><label for="multichoise">Несколько вариантов ответа</label>
 
+        <div id="answerBlock" class="hidden">
+            <p class="new_title">Правильный ответ</p>
+            <input type="text" id="right" name="right">
+        </div>
     </form>
     <button type="button" id="submit">Изменить</button>
 
     <a href="/"><button class="back" type="button">&#9668;Назад</button></a>
 </body>
 <script>
+    const checkbox = document.getElementById('victorina');
+    const answerBlock = document.getElementById('answerBlock');
+    checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                answerBlock.classList.remove('hidden');
+            } else {
+                answerBlock.classList.add('hidden');
+            }
+        });
+
     let counter = 0;
     add.onclick = function() {
         addAnswer("");
@@ -71,7 +85,8 @@
             "title": document.getElementById("title").value,
             "answers": answers,
             "multiplayer_choise": document.getElementById("multichoise").checked,
-            "have_right_answer": document.getElementById("victorina").checked
+            "have_right_answer": document.getElementById("victorina").checked,
+            "right_answer": document.getElementById("right").value
         }
         let x = location.pathname.split('/')[2];
         fetch(`/edit/${x}`, {
@@ -125,10 +140,10 @@
     function loadQuiz(quiz_id){
         fetch(`/quizes/${quiz_id}`)
         .then(response => response.json())
-        .then(quiz => createForm(quiz.title, quiz.answers, quiz.multiplayer_choise, quiz.have_right_answer)) //добавить еще параметры
+        .then(quiz => createForm(quiz.title, quiz.answers, quiz.multiplayer_choise, quiz.have_right_answer, quiz.right_answer)) //добавить еще параметры
     }
 
-    function createForm(text, answers, multiplayer_choise, have_right_answer) {
+    function createForm(text, answers, multiplayer_choise, have_right_answer, right_answer) {
         title = document.getElementById('title');
         title.value = text;
 
@@ -144,6 +159,11 @@
         multichoise.checked = multiplayer_choise;
         victorina = document.getElementById('victorina');
         victorina.checked = have_right_answer;
+        if (have_right_answer) {
+            answerBlock.classList.remove('hidden');
+            right = document.getElementById('right');
+            right.value = right_answer;
+        }
     }
 
     

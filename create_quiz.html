@@ -21,6 +21,11 @@
         <input type="checkbox" id="victorina" value="Режим викторины" name="have_right_answer"><label for="victorina">Режим викторины</label>
         <input type="checkbox" id="multichoise" value="Несколько ответов" name="multichoise"><label for="multichoise">Несколько вариантов ответа</label>
 
+        <div id="answerBlock" class="hidden">
+            <p class="new_title">Правильный ответ</p>
+            <input type="text" id="right" name="right">
+        </div>
+
     </form>
     <button type="button" id="submit">Создать</button>
 
@@ -28,6 +33,16 @@
     <!--<button type="button" id = "test">Перейти к тесту</button> потом убрать-->
 </body>
 <script>
+    const checkbox = document.getElementById('victorina');
+    const answerBlock = document.getElementById('answerBlock');
+    checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                answerBlock.classList.remove('hidden');
+            } else {
+                answerBlock.classList.add('hidden');
+            }
+        });
+
     let counter = 0;
     add.onclick = function() {
         counter += 1;
@@ -67,7 +82,8 @@
             "title": document.getElementById("title").value,
             "answers": answers,
             "multiplayer_choise": document.getElementById("multichoise").checked,
-            "have_right_answer": document.getElementById("victorina").checked
+            "have_right_answer": document.getElementById("victorina").checked,
+            "right_answer": document.getElementById("right").value
         }
         fetch("/quizes", {
             method: "POST",
