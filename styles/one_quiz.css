@@ -120,7 +120,7 @@ a {
     text-decoration: none;
 }
 
-.back {
+button {
     
     margin-top: 40px;
     border-radius: 4px;
@@ -130,7 +130,7 @@ a {
     color: blue;
 }
 
-.back:hover {
+button:hover {
     background-color: #e0e0e0;
 }
 
@@ -140,15 +140,6 @@ a {
     width: 600px;
 }
 
-#edit {
-    margin-top: 40px;
-    padding: 8px 12px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-    color: blue;
-}
-
-#edit:hover {
-    background-color: #e0e0e0;
+#submit_button {
+    margin: auto;
 }
