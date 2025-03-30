@@ -24,12 +24,7 @@
 </body>
 <script src="https://confettijs.org/confetti.min.js"></script>
     <script>
-            let confetti = new Confetti("container");
-            confetti.destroyTarget(false); 
-            confetti.setCount(200);
-            confetti.setSize(2);
-            confetti.setPower(50);
-            confetti.setFade(true);
+            
     </script>
 
 <script>
@@ -47,10 +42,10 @@
     function loadQuiz(quiz_id){
         fetch(`/quizes/${quiz_id}`)
         .then(response => response.json())
-        .then(quiz => createQuiz(quiz_id, quiz.title, quiz.answers)) //добавить еще параметры
+        .then(quiz => createQuiz(quiz_id, quiz.title, quiz.answers, quiz.multiplayer_choise)) //добавить еще параметры
     }
 
-    function createQuiz(quiz_id, text, answers){ //добавить еще параметры
+    function createQuiz(quiz_id, text, answers, multiplayer_choise){ //добавить еще параметры
 
         list_of_answers = answers; //временно
 
@@ -61,6 +56,16 @@
         const specialDiv = document.getElementById("container");
         specialDiv.appendChild(title);
 
+        if (multiplayer_choise == true){
+            Create_Multi_Answers(specialDiv, answers, quiz_id);
+        }
+        else{
+            Create_Answers(specialDiv, answers, quiz_id);
+        }
+
+    } 
+
+    function Create_Answers(specialDiv, answers, quiz_id) {
         const div = document.createElement('div');
         div.classList.add('answers_list');
 
@@ -73,20 +78,112 @@
             answer.id = index; //зачем?
             div.appendChild(answer);
             answer.appendChild(text);
-            answer.onclick = () => showAnswers(quiz_id, text.textContent);
+            answer.onclick = function() {
+                let Answers = [];
+                Answers.push(text.textContent)
+                showAnswers(quiz_id, Answers);
+            }
         });
 
         specialDiv.appendChild(div);
 
-    } 
+        let confetti = new Confetti("container");
+            confetti.destroyTarget(false); 
+            confetti.setCount(200);
+            confetti.setSize(2);
+            confetti.setPower(50);
+            confetti.setFade(true); //костыли с конфети
+    }
 
-    function showAnswers(id, vote_answer) { 
+    function Create_Multi_Answers(specialDiv, answers, quiz_id) {
+        const div = document.createElement('div');
+        div.classList.add('answers_list');
+
+        answers.forEach((element, index) => {
+            const answer = document.createElement('div');
+            const text = document.createElement('div');
+            text.classList.add('text');
+            text_content = Object.keys(element)[0]; //достаю названия словарей
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = text_content;
+            checkbox.value = text_content;
+            checkbox.name = text_content;
+            checkbox.addEventListener('change', checkCheckboxes);
+
+            const label = document.createElement('label');
+            label.className = 'label'; // Устанавливаем класс
+            label.htmlFor = text_content; // Устанавливаем атрибут for
+            label.textContent = text_content; // Устанавливаем текст метки
+
+            answer.classList.add('answer');
+            answer.id = index; //зачем?
+            div.appendChild(answer);
+            answer.appendChild(text);
+            text.appendChild(label);
+            text.appendChild(checkbox);
+            //answer.onclick = () => showAnswers(quiz_id, text.textContent);
+        });
+
+        const submit_button = document.createElement("button");
+        submit_button.id = "submit_button"
+        submit_button.textContent = "Проголосовать"
+        submit_button.style.display = "none";
+
+        specialDiv.appendChild(div);
+        specialDiv.appendChild(submit_button)
+
+        submit_button.onclick = function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var Vote_Answers = []
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    Vote_Answers.push(checkbox.id); // Добавляем id в массив, если чекбокс выбран
+                }
+                checkbox.remove();
+            });
+
+            showAnswers(quiz_id, Vote_Answers);
+            submit_button.style.display = 'none';
+        }
+    }
+
+    function checkCheckboxes() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const submit_button = document.getElementById('submit_button');
+
+        let isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        submit_button.style.display = isChecked ? 'block' : 'none';
+    }
+
+    function showAnswers(id, Vote_Answers){ //список строк  //переделать чтобы принимала несколько ответов
+        let voted_quiz = null; //костыли и кошмар
+        for (let i = 0; i < Vote_Answers.length - 1; i++) {
+            vote_answer = Vote_Answers[i];
+            fetch(`/plus/${id}`, {
+                method: "POST",
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({answer: vote_answer})
+            })
+            .then(response => response.json()) //пока непонятно зачем
+            .then(quiz => voted_quiz = quiz)
+            .catch(function (error) { 
+                alert(error);
+            });  
+        };
+
+        last_voted_answer = Vote_Answers[Vote_Answers.length - 1];
+
         fetch(`/plus/${id}`, {
             method: "POST",
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({answer: vote_answer})
+            body: JSON.stringify({answer: last_voted_answer})
         })
         .then(response => response.json()) //пока непонятно зачем
         .then(quiz => {
@@ -102,8 +199,8 @@
                 bg.classList.add("bg");
                 if (quiz.have_right_answer == true){
                     tf.classList.remove('hidden');
-                    if (quiz.right_answer == vote_answer){
-                        if (txt == vote_answer){
+                    if (Vote_Answers.includes(quiz.right_answer)){ //тут потом поменять
+                        if (Vote_Answers.includes(txt)){
                             bg.classList.add("yes-choise")
                         }
                         else{
@@ -112,7 +209,7 @@
                         tf.textContent = "Правильно!";
                     }
                     else {
-                        if (txt == vote_answer){
+                        if (Vote_Answers.includes(txt)){
                             bg.classList.add("no-choise")
                         }
                         else {bg.classList.add("no");}
@@ -121,7 +218,7 @@
                     
                 }
                 else {
-                    if (txt == vote_answer){
+                    if (Vote_Answers.includes(txt)){
                             bg.classList.add("ne_victorina-choise")
                         }
                     else {bg.classList.add("ne_victorina")}
@@ -136,7 +233,7 @@
         })
         .catch(function (error) { 
             alert(error);
-        });     
+        });      
     }
 
     function get_summ (list_of_dict) {
