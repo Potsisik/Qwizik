@@ -78,7 +78,11 @@
             answer.id = index; //зачем?
             div.appendChild(answer);
             answer.appendChild(text);
-            answer.onclick = () => showAnswers(quiz_id, text.textContent);
+            answer.onclick = function() {
+                let Answers = [];
+                Answers.push(text.textContent)
+                showAnswers(quiz_id, Answers);
+            }
         });
 
         specialDiv.appendChild(div);
@@ -129,6 +133,21 @@
 
         specialDiv.appendChild(div);
         specialDiv.appendChild(submit_button)
+
+        submit_button.onclick = function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var Vote_Answers = []
+
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    Vote_Answers.push(checkbox.id); // Добавляем id в массив, если чекбокс выбран
+                }
+                checkbox.remove();
+            });
+
+            showAnswers(quiz_id, Vote_Answers);
+            submit_button.style.display = 'none';
+        }
     }
 
     function checkCheckboxes() {
@@ -140,8 +159,8 @@
     }
 
     function showAnswers(id, Vote_Answers){ //список строк  //переделать чтобы принимала несколько ответов
-        const voted_quiz = null;
-        for (let i = 0; i < length(Vote_Answers); i++) {
+        let voted_quiz = null; //костыли и кошмар
+        for (let i = 0; i < Vote_Answers.length - 1; i++) {
             vote_answer = Vote_Answers[i];
             fetch(`/plus/${id}`, {
                 method: "POST",
@@ -155,50 +174,66 @@
             .catch(function (error) { 
                 alert(error);
             });  
-        }
-        list_of_answers = voted_quiz.answers;
-        sum = get_summ(list_of_answers);
-        const elems = document.getElementsByClassName('answer');
-        Array.from(elems).forEach((elem, index) => {
-            const bg = document.createElement('div');
-            x = list_of_answers[index]; // получили элемент из массива ответов
-            txt = elem.querySelector(".text").textContent;
+        };
 
-            bg.textContent = x[txt];
-            bg.classList.add("bg");
-            if (voted_quiz.have_right_answer == true){
-                tf.classList.remove('hidden');
-                if (voted_quiz.right_answer == vote_answer){
-                    if (txt == vote_answer){
-                        bg.classList.add("yes-choise")
+        last_voted_answer = Vote_Answers[Vote_Answers.length - 1];
+
+        fetch(`/plus/${id}`, {
+            method: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({answer: last_voted_answer})
+        })
+        .then(response => response.json()) //пока непонятно зачем
+        .then(quiz => {
+            list_of_answers = quiz.answers
+            sum = get_summ(list_of_answers);
+            const elems = document.getElementsByClassName('answer');
+            Array.from(elems).forEach((elem, index) => {
+                const bg = document.createElement('div');
+                x = list_of_answers[index]; // получили элемент из массива ответов
+                txt = elem.querySelector(".text").textContent;
+
+                bg.textContent = x[txt];
+                bg.classList.add("bg");
+                if (quiz.have_right_answer == true){
+                    tf.classList.remove('hidden');
+                    if (Vote_Answers.includes(quiz.right_answer)){ //тут потом поменять
+                        if (Vote_Answers.includes(txt)){
+                            bg.classList.add("yes-choise")
+                        }
+                        else{
+                            bg.classList.add("yes");
+                        }
+                        tf.textContent = "Правильно!";
                     }
-                    else{
-                        bg.classList.add("yes");
+                    else {
+                        if (Vote_Answers.includes(txt)){
+                            bg.classList.add("no-choise")
+                        }
+                        else {bg.classList.add("no");}
+                        tf.textContent = "Неправильно(";
                     }
-                    tf.textContent = "Правильно!";
+                    
                 }
                 else {
-                    if (txt == vote_answer){
-                        bg.classList.add("no-choise")
-                    }
-                    else {bg.classList.add("no");}
-                    tf.textContent = "Неправильно(";
+                    if (Vote_Answers.includes(txt)){
+                            bg.classList.add("ne_victorina-choise")
+                        }
+                    else {bg.classList.add("ne_victorina")}
                 }
-                
-            }
-            else {
-                if (Vote_Answers.includes(txt)){
-                        bg.classList.add("ne_victorina-choise")
-                    }
-                else {bg.classList.add("ne_victorina")}
-            }
 
-            len = (x[txt] / sum) * 100;
-            bg.style.maxWidth = `${len}%`;
+                len = (x[txt] / sum) * 100;
+                bg.style.maxWidth = `${len}%`;
 
-            elem.appendChild(bg);
-            elem.onclick = null;
-        })    
+                elem.appendChild(bg);
+                elem.onclick = null;
+            })
+        })
+        .catch(function (error) { 
+            alert(error);
+        });      
     }
 
     function get_summ (list_of_dict) {
