@@ -8,7 +8,7 @@ app.include_router(router)
 app.mount("/styles", StaticFiles(directory="styles"), name="styles")
         
 
-My_DB = DB('quizes.json') #создали базу данных, где подгружены все данные из файла
+My_DB = DB('db/quizes.json') #создали базу данных, где подгружены все данные из файла
 
 @app.get("/quizes", tags=["Опросы"], summary=["Получить все опросы"]) #получаем все данные с сервера
 def read_quizes():
