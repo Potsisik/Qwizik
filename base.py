@@ -49,7 +49,7 @@ class DB: #класс базы данных
         quiz.id = self.get_max_id() + 1
         quiz.answers = str_to_dict(quiz.answers)
         self.li_quiz.append(quiz)
-        with open("quizes.json", 'w', encoding='utf-8',) as f:
+        with open("db/quizes.json", 'w', encoding='utf-8',) as f:
             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
         return quiz.id
     
@@ -65,7 +65,7 @@ class DB: #класс базы данных
                     quiz.right_answer = new_quiz.right_answer
                 else:
                     quiz.right_answer = None
-        with open("quizes.json", 'w', encoding='utf-8',) as f:
+        with open("db/quizes.json", 'w', encoding='utf-8',) as f:
             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
         return edit_id
     
@@ -82,7 +82,7 @@ class DB: #класс базы данных
                     key = list(answer.keys())[0]
                     if key == vote_answer:
                         answer[key] += 1
-                        with open("quizes.json", 'w', encoding='utf-8',) as f:
+                        with open("db/quizes.json", 'w', encoding='utf-8',) as f:
                             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
                         return quiz
         raise HTTPException(status_code=404)
@@ -95,7 +95,7 @@ class DB: #класс базы данных
                 index_to_remove = i
                 quizes.pop(index_to_remove)
                 break
-        with open("quizes.json", 'w', encoding='utf-8',) as f:
+        with open("db/quizes.json", 'w', encoding='utf-8',) as f:
             json.dump(self.li_quiz, f, default=pydantic_encoder, ensure_ascii=False)
         return("ok")
     
